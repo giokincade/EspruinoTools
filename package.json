@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "acorn": ">=0.6.0",
+    "acorn-walk": "^8.0.0",
     "es6-shim": "",
     "escodegen": "",
     "esmangle": "",

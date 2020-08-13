@@ -9,7 +9,7 @@ function loadJS(filePath) {
   var contents = fs.readFileSync(filePath, {encoding:"utf8"});
   return eval(contents);
   /* the code below would be better, but it doesn't seem to work when running
-   CLI - works fine when running as a module. */ 
+   CLI - works fine when running as a module. */
   //return require("vm").runInThisContext(contents, filePath );
 }
 function loadDir(dir) {
@@ -18,7 +18,7 @@ function loadDir(dir) {
     var filePath = dir+"/"+files[i];
     if (files[i].substr(-3)==".js" && files[i][0]!="_")
       loadJS(filePath);
-    /*else if (fs.lstatSync(filePath).isDirectory()) 
+    /*else if (fs.lstatSync(filePath).isDirectory())
       loadDir(filePath); // recursive */
   }
 }
@@ -55,13 +55,13 @@ function init(callback) {
   espruinoInitialised = true;
 
   global.navigator = { userAgent : "node" };
-  global.document = {};  
+  global.document = {};
   global.document = undefined;
   global.Espruino = undefined;
 
   try {
     global.acorn = require("acorn");
-    acorn.walk = require("acorn/util/walk");
+    acorn.walk = require("acorn-walk");
   } catch(e) {
     console.log("Acorn library not found - you'll need it for compiled code");
   }
@@ -80,12 +80,12 @@ function init(callback) {
   } catch(e) {
     console.log("escodegen library not found - you'll need it to minify code");
   }
-  
+
   // Load each JS file...
   // libraries needed by the tools
   loadDir(__dirname+"/libs");
   /* NOTE: we have libs/esprima that we're not parsing here.
-   it's got some detection for node.js and loading this way 
+   it's got some detection for node.js and loading this way
    doesn't work - instead we require it using NPM below. */
   // the 'main' file
   Espruino = loadJS(__dirname+"/espruino.js");
@@ -94,19 +94,19 @@ function init(callback) {
   // Various plugins
   loadDir(__dirname+"/plugins");
 
-  // Bodge up notifications  
+  // Bodge up notifications
   Espruino.Core.Notifications = {
     success : function(e) { console.log(e); },
     error : function(e) { console.error(e); },
     warning : function(e) { console.warn(e); },
-    info : function(e) { console.log(e); }, 
-  };  
+    info : function(e) { console.log(e); },
+  };
   Espruino.Core.Status = {
     setStatus : function(e,len) { console.log(e); },
     hasProgress : function() { return false; },
     incrementProgress : function(amt) {}
   };
-  
+
   // Finally init everything
   jqReady.forEach(function(cb){cb();});
   Espruino.init();
@@ -139,7 +139,7 @@ function sendCode(port, code, callback) {
           setTimeout(function() {
             Espruino.Core.Serial.close();
           }, 500);
-        }); 
+        });
       });
     }, function() { // disconnected
       if (callback) callback();
@@ -157,7 +157,7 @@ exports.expr = function(port, expr, callback) {
         console.error("Unable to connect!");
         return callback();
       }
-      Espruino.Core.Utils.executeExpression(expr, function(result) { 
+      Espruino.Core.Utils.executeExpression(expr, function(result) {
         setTimeout(function() {
           Espruino.Core.Serial.close();
         }, 500);
